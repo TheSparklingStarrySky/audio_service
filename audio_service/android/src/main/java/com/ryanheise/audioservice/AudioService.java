@@ -112,7 +112,11 @@ public class AudioService extends MediaBrowserServiceCompat {
 
     public static int toKeyCode(long action) {
         if (action == PlaybackStateCompat.ACTION_PLAY) {
-            return KEYCODE_BYPASS_PLAY;
+            // 修复 OxygenOS/ColorOS (OnePlus/OPPO) 展开通知栏和锁屏无法播放的问题
+            // 原代码使用 KEYCODE_BYPASS_PLAY (= KEYCODE_MUTE)，
+            // 但 ColorOS 不认识这个非标准 keycode，会静默丢弃 play 指令
+            // 参考: https://github.com/ryanheise/audio_service/issues/1115
+            return PlaybackStateCompat.toKeyCode(action);
         } else if (action == PlaybackStateCompat.ACTION_PAUSE) {
             return KEYCODE_BYPASS_PAUSE;
         } else {
